@@ -1,0 +1,16 @@
+{
+  "name": "Screen Counter",
+  "id": "screen-counter-plugin",
+  "id": "1517749501801287760",
+  "documentAccess": "dynamic-page",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": ["figma", "dev"],
+  "networkAccess": {
+    "allowedDomains": ["none"]
+  },
+  "parameterOnly": false
+}
