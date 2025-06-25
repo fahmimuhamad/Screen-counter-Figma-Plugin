@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Search, Hash, Frame, Eye, MousePointer } from 'lucide-react';
+import { Search, Hash, Frame, Eye, MousePointer, Plus } from 'lucide-react';
 import './ui.css';
 
 interface FrameInfo {
@@ -34,6 +34,7 @@ function App() {
   const [prefix, setPrefix] = useState('');
   const [result, setResult] = useState<CountResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleCount = () => {
     setIsLoading(true);
@@ -42,6 +43,21 @@ function App() {
         pluginMessage: { 
           type: 'count-screens', 
           prefix: prefix.trim() 
+        } 
+      }, 
+      '*'
+    );
+  };
+
+  const handleGenerate = () => {
+    if (!result) return;
+    
+    setIsGenerating(true);
+    parent.postMessage(
+      { 
+        pluginMessage: { 
+          type: 'generate-frame', 
+          result: result 
         } 
       }, 
       '*'
@@ -64,6 +80,7 @@ function App() {
     setResult(null);
     setPrefix('');
     setIsLoading(false);
+    setIsGenerating(false);
   };
 
   useEffect(() => {
@@ -72,6 +89,14 @@ function App() {
       if (message && message.type === 'count-result') {
         setResult(message.result);
         setIsLoading(false);
+      } else if (message && message.type === 'frame-generated') {
+        setIsGenerating(false);
+        if (message.success) {
+          // Optionally show success message
+        } else {
+          // Handle error
+          console.error('Failed to generate frame:', message.error);
+        }
       }
     };
 
@@ -215,6 +240,18 @@ function App() {
               <span className="prefix-label">Grouping prefixes:</span>
               <code className="prefix-value">"{result.prefix}"</code>
             </div>
+          )}
+
+          {/* Generate Button */}
+          {result.matches.length > 0 && (
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="generate-button"
+            >
+              <Plus className="w-4 h-4" />
+              {isGenerating ? 'Generating...' : 'Generate Summary Frame'}
+            </button>
           )}
 
           {/* Frame Groups or List */}
